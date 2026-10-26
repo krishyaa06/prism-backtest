@@ -1,4 +1,4 @@
-<!-- Prism Systems 11/49 -->
+<!-- Prism Systems 11/12 -->
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=0:06070d,55:F5C542,100:7C5CFF&height=210&section=header&text=Prism%20Backtest&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=35&desc=Event-driven%20backtesting%20with%20Indian%20costs%2C%20risk%20controls%20and%20overfitting%20checks&descAlignY=57&descSize=17" width="100%" alt="Prism Backtest" />
 </p>
@@ -12,7 +12,7 @@
   <a href="https://krishyaa06.github.io/prism-backtest/"><img src="https://img.shields.io/badge/Live_Simulator-Open-F5C542?style=for-the-badge&logo=githubpages&logoColor=black" alt="Live simulator" /></a>
   <img src="https://img.shields.io/badge/Node.js-%E2%89%A518.17-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js 18+" />
   <img src="https://img.shields.io/badge/dependencies-0-7C5CFF?style=for-the-badge" alt="Zero dependencies" />
-  <img src="https://img.shields.io/badge/Prism_Systems-11%2F49-111827?style=for-the-badge" alt="Prism Systems 11/49" />
+  <img src="https://img.shields.io/badge/Prism_Systems-11%2F12-111827?style=for-the-badge" alt="Prism Systems 11/12" />
   <a href="LICENSE"><img src="https://img.shields.io/github/license/krishyaa06/prism-backtest?style=for-the-badge&color=7C5CFF" alt="MIT License" /></a>
 </p>
 
@@ -259,7 +259,7 @@ The test suite uses the built-in `node:test` runner, so there is nothing to inst
 
 ## 🔷 Part of Prism Systems
 
-**Prism Backtest** is system **11 of 49** in **Prism Systems**, a series of open-source reference implementations of large-scale infrastructure by [Prism Protocol](https://dc.gg/prismprotocol). Each one ships a real engine, a CLI and a live simulator, all with zero dependencies.
+**Prism Backtest** is system **11 of 12** in **Prism Systems**, a series of open-source reference implementations of large-scale infrastructure by [Prism Protocol](https://dc.gg/prismprotocol). Each one ships a real engine, a CLI and a live simulator, all with zero dependencies.
 
 ## 👤 Author
 

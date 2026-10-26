@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm test
+      - name: Smoke test
+        run: |
+          node bin/backtest.js demo && node bin/backtest.js run --strategy donchian --symbols BANKX --trades && node bin/backtest.js run --strategy pairs && node bin/backtest.js run --strategy rsi-revert --csv examples/SAMPLE.csv && node bin/backtest.js sweep --strategy sma-cross && node bin/backtest.js walkforward --strategy donchian && node bin/backtest.js montecarlo --runs 300 && node bin/backtest.js costs && node bin/backtest.js strategies && node bin/backtest.js bench --years 5

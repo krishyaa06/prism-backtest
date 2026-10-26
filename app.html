@@ -1,0 +1,51 @@
+<div class="sim">
+  <div class="main">
+    <div class="panel glow">
+      <div class="toolbar">
+        <button class="btn primary sm" data-play>▶ Run</button>
+        <select data-speed aria-label="Speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="3">3×</option><option value="8">8×</option></select>
+        <span class="sep"></span>
+        <select id="strat" aria-label="Strategy"></select>
+        <select id="sym" aria-label="Symbol"></select>
+        <span class="sep"></span>
+        <button class="btn sm bad" data-shock="crash">Crash</button>
+        <button class="btn sm" data-shock="rally">Rally</button>
+        <button class="btn sm" data-shock="chop">Chop</button>
+        <button class="btn sm" id="peek" title="Fill at the same close used for the signal (look-ahead bias)">Peek at close</button>
+        <button class="btn sm" id="reseed">New market</button>
+        <button class="btn sm primary" id="resume" style="display:none">Resume trading</button>
+        <span class="sp"></span>
+        <span class="live"><i></i> paused</span>
+      </div>
+      <div id="kpis" style="margin-top:12px"></div>
+    </div>
+    <div class="viz" id="pxw" style="height:470px"><span class="tag" id="tag">daily bars</span><canvas id="px"></canvas></div>
+    <div class="g2 grid">
+      <div class="panel"><div class="ph">Equity vs buy &amp; hold <span class="sp"></span><span class="pill dim" id="alpha">—</span></div><canvas class="chart" id="eqc" style="height:150px"></canvas></div>
+      <div class="panel"><div class="ph">Drawdown <span class="sp"></span><span class="pill dim" id="ddp">—</span></div><canvas class="chart" id="ddc" style="height:150px"></canvas></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="panel"><div class="ph">Strategy &amp; risk <span class="sp"></span><span class="pill dim" id="kind">—</span></div>
+      <div id="sdesc" class="sdesc"></div>
+      <div id="params" class="params"></div>
+      <div class="params" id="risk"></div>
+      <div class="opts">
+        <label>Costs<select id="costs"><option value="india-delivery">NSE delivery</option><option value="india-intraday">NSE intraday</option><option value="bps">5 bps flat</option><option value="zero">No costs</option></select></label>
+        <label>Slippage<select id="slip"><option value="sqrt">√ impact</option><option value="bps">5 bps</option><option value="none">None</option></select></label>
+        <label class="tg"><input type="checkbox" id="short"> allow shorts</label>
+      </div>
+      <div class="toolbar" style="margin-top:10px"><button class="btn primary sm" id="apply">Replay history</button><span class="sp"></span><span id="rstat" class="rstat"></span></div>
+    </div>
+    <div class="panel"><div class="ph">Trades <span class="sp"></span><span class="pill dim" id="tn">0</span></div><div id="trades" class="trades"></div></div>
+    <div class="panel"><div class="ph">Overfitting check <span class="sp"></span><button class="btn sm" id="sweep">Sweep</button></div>
+      <canvas id="heat" class="chart" style="height:170px"></canvas>
+      <div id="sweepi" class="note">Grid-search two parameters on the history so far. Click a cell to use it.</div>
+    </div>
+    <div class="panel"><div class="ph">Monte Carlo <span class="sp"></span><button class="btn sm" id="mc">Bootstrap</button></div>
+      <canvas id="fan" class="chart" style="height:130px"></canvas>
+      <div id="mci" class="note">Resample 10-day blocks of daily returns 400 times.</div>
+    </div>
+    <div class="panel"><div class="ph">Events</div><div id="log" class="log" style="height:170px;font-size:11px"></div></div>
+  </div>
+</div>

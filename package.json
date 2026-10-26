@@ -1,0 +1,43 @@
+{
+  "name": "prism-backtest",
+  "version": "1.0.0",
+  "description": "Prism Backtest runs trading strategies over daily OHLCV data the way they would have traded. Bars are fed one at a time, so a strategy can't see the future, and orders decided on a close fill at the next open. Fills pay NSE delivery or intraday charges (STT, exchange fees, SEBI fee, stamp duty, GST, DP charge) plus a half-spread and square-root market impact, and they are capped at a share of daily volume. Stops are gap-aware, and position limits, gross exposure limits and a drawdown kill switch sit between the strategy and the market. Seven built-in strategies cover trend, mean reversion, breakout, cross-sectional momentum and pairs trading. Parameter sweeps report the deflated Sharpe ratio, rolling walk-forward analysis keeps every test window out of sample, and a block bootstrap gives a distribution instead of a single equity curve. A regime-switching synthetic market with jumps and a cointegrated pair lets everything run without downloading data, and a strict CSV loader takes real data.",
+  "type": "module",
+  "bin": {
+    "backtest": "bin/backtest.js"
+  },
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "start": "npx --yes serve ."
+  },
+  "keywords": [
+    "backtesting",
+    "algorithmic-trading",
+    "quantitative-finance",
+    "trading-strategies",
+    "fintech",
+    "nse",
+    "walk-forward",
+    "monte-carlo",
+    "sharpe-ratio",
+    "javascript"
+  ],
+  "author": "Soumya Bhandare (krishyaa06)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krishyaa06/prism-backtest.git"
+  },
+  "homepage": "https://krishyaa06.github.io/prism-backtest/",
+  "engines": {
+    "node": ">=18.17"
+  }
+}

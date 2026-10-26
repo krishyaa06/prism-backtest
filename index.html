@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prism Backtest · Event-driven backtesting with Indian costs, risk controls and overfitting checks · Prism Systems</title>
+  <meta name="description" content="Prism Backtest runs trading strategies over daily OHLCV data the way they would have traded. Bars are fed one at a time, so a strategy can&#x27;t see the future, and orders decided on a close fill at the next open. Fills pay NSE delivery or intraday charges (STT, exchange fees, SEBI fee, stamp duty, GST, DP charge) plus a half-spread and square-root market impact, and they are capped at a share of daily volume. Stops are gap-aware, and position limits, gross exposure limits and a drawdown kill switch sit between the strategy and the market. Seven built-in strategies cover trend, mean reversion, breakout, cross-sectional momentum and pairs trading. Parameter sweeps report the deflated Sharpe ratio, rolling walk-forward analysis keeps every test window out of sample, and a block bootstrap gives a distribution instead of a single equity curve. A regime-switching synthetic market with jumps and a cointegrated pair lets everything run without downloading data, and a strict CSV loader takes real data." />
+  <meta name="theme-color" content="#06070d" />
+  <meta property="og:title" content="Prism Backtest · Prism Systems" />
+  <meta property="og:description" content="Prism Backtest runs trading strategies over daily OHLCV data the way they would have traded. Bars are fed one at a time, so a strategy can&#x27;t see the future, and orders decided on a close fill at the next open. Fills pay NSE delivery or intraday charges (STT, exchange fees, SEBI fee, stamp duty, GST, DP charge) plus a half-spread and square-root market impact, and they are capped at a share of daily volume. Stops are gap-aware, and position limits, gross exposure limits and a drawdown kill switch sit between the strategy and the market. Seven built-in strategies cover trend, mean reversion, breakout, cross-sectional momentum and pairs trading. Parameter sweeps report the deflated Sharpe ratio, rolling walk-forward analysis keeps every test window out of sample, and a block bootstrap gives a distribution instead of a single equity curve. A regime-switching synthetic market with jumps and a cointegrated pair lets everything run without downloading data, and a strict CSV loader takes real data." />
+  <meta property="og:image" content="https://krishyaa06.github.io/prism-backtest/assets/screenshots/desktop.png" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/pro.css" />
+  <link rel="stylesheet" href="css/app.css" />
+  <style>:root{--accent:#F5C542;--accent-2:#7C5CFF}</style>
+</head>
+<body>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <header class="topbar"><div class="wrap">
+    <a class="brand" href="./"><span class="mark">◆</span><b>PRISM</b><span>Backtest</span></a>
+    <nav>
+      <a class="nl" href="#sim">Simulator</a><a class="nl" href="#features">Features</a><a class="nl" href="#how">How it works</a><a class="nl" href="#arch">Architecture</a><a class="nl" href="#use">Use it</a>
+      <a class="btn sm" href="https://github.com/krishyaa06/prism-backtest" target="_blank" rel="noreferrer">★ GitHub</a>
+    </nav>
+  </div></header>
+  <main>
+    <section class="hero wrap">
+      <p class="eyebrow"><span class="n">11 / 49</span>Prism Systems · FinTech &amp; Banking</p>
+      <h1>Backtests that <em>tell you when they're lying</em></h1>
+      <p class="lead">An event-driven strategy backtester: strategies see one bar at a time and fill at the next open. It models NSE delivery and intraday charges, square-root market impact, participation caps, gap-aware stops, position and gross limits, and a drawdown kill switch. Parameter sweeps report a deflated Sharpe ratio, walk-forward analysis keeps tests out of sample, and Monte Carlo bootstraps the returns.</p>
+      <div class="cta"><a class="btn primary" href="#sim">▶ Launch the simulator</a><a class="btn" href="#use">Use the engine</a><a class="btn ghost" href="https://github.com/krishyaa06/prism-backtest" target="_blank" rel="noreferrer">View source →</a></div>
+      <div class="chips"><span class="chip"><i></i>Zero dependencies</span><span class="chip"><i></i>No look-ahead by design</span><span class="chip"><i></i>NSE cost model</span><span class="chip"><i></i>Deflated Sharpe ratio</span><span class="chip"><i></i>Walk-forward + Monte Carlo</span></div>
+    </section>
+    <section class="section wrap" id="sim">
+      <div class="sec-head"><span class="kicker">Live simulator</span><h2>A live market, a strategy trading it, and a check on whether to believe the results</h2><p>A synthetic NSE-like market prints a new daily bar six times a second. Pick a strategy and a symbol, drag its parameters, and the entire history replays instantly with the new settings. Trigger a crash, rally or choppy market, add a stop or kill switch, or turn on look-ahead to see how much a peek is worth. Sweep the parameters to see if the best result survives deflation, and bootstrap the returns to see the range of outcomes.</p></div>
+<div class="sim">
+  <div class="main">
+    <div class="panel glow">
+      <div class="toolbar">
+        <button class="btn primary sm" data-play>▶ Run</button>
+        <select data-speed aria-label="Speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="3">3×</option><option value="8">8×</option></select>
+        <span class="sep"></span>
+        <select id="strat" aria-label="Strategy"></select>
+        <select id="sym" aria-label="Symbol"></select>
+        <span class="sep"></span>
+        <button class="btn sm bad" data-shock="crash">Crash</button>
+        <button class="btn sm" data-shock="rally">Rally</button>
+        <button class="btn sm" data-shock="chop">Chop</button>
+        <button class="btn sm" id="peek" title="Fill at the same close used for the signal (look-ahead bias)">Peek at close</button>
+        <button class="btn sm" id="reseed">New market</button>
+        <button class="btn sm primary" id="resume" style="display:none">Resume trading</button>
+        <span class="sp"></span>
+        <span class="live"><i></i> paused</span>
+      </div>
+      <div id="kpis" style="margin-top:12px"></div>
+    </div>
+    <div class="viz" id="pxw" style="height:470px"><span class="tag" id="tag">daily bars</span><canvas id="px"></canvas></div>
+    <div class="g2 grid">
+      <div class="panel"><div class="ph">Equity vs buy &amp; hold <span class="sp"></span><span class="pill dim" id="alpha">—</span></div><canvas class="chart" id="eqc" style="height:150px"></canvas></div>
+      <div class="panel"><div class="ph">Drawdown <span class="sp"></span><span class="pill dim" id="ddp">—</span></div><canvas class="chart" id="ddc" style="height:150px"></canvas></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="panel"><div class="ph">Strategy &amp; risk <span class="sp"></span><span class="pill dim" id="kind">—</span></div>
+      <div id="sdesc" class="sdesc"></div>
+      <div id="params" class="params"></div>
+      <div class="params" id="risk"></div>
+      <div class="opts">
+        <label>Costs<select id="costs"><option value="india-delivery">NSE delivery</option><option value="india-intraday">NSE intraday</option><option value="bps">5 bps flat</option><option value="zero">No costs</option></select></label>
+        <label>Slippage<select id="slip"><option value="sqrt">√ impact</option><option value="bps">5 bps</option><option value="none">None</option></select></label>
+        <label class="tg"><input type="checkbox" id="short"> allow shorts</label>
+      </div>
+      <div class="toolbar" style="margin-top:10px"><button class="btn primary sm" id="apply">Replay history</button><span class="sp"></span><span id="rstat" class="rstat"></span></div>
+    </div>
+    <div class="panel"><div class="ph">Trades <span class="sp"></span><span class="pill dim" id="tn">0</span></div><div id="trades" class="trades"></div></div>
+    <div class="panel"><div class="ph">Overfitting check <span class="sp"></span><button class="btn sm" id="sweep">Sweep</button></div>
+      <canvas id="heat" class="chart" style="height:170px"></canvas>
+      <div id="sweepi" class="note">Grid-search two parameters on the history so far. Click a cell to use it.</div>
+    </div>
+    <div class="panel"><div class="ph">Monte Carlo <span class="sp"></span><button class="btn sm" id="mc">Bootstrap</button></div>
+      <canvas id="fan" class="chart" style="height:130px"></canvas>
+      <div id="mci" class="note">Resample 10-day blocks of daily returns 400 times.</div>
+    </div>
+    <div class="panel"><div class="ph">Events</div><div id="log" class="log" style="height:170px;font-size:11px"></div></div>
+  </div>
+</div>
+
+    </section>
+    <section class="section wrap" id="features">
+      <div class="sec-head reveal"><span class="kicker">Features</span><h2>What's inside the engine</h2><p>Real algorithms, not mock-ups. The simulator above runs the exact same code you import.</p></div>
+      <div class="feat"><div class="card reveal"><div class="ic">⏵</div><h3>No look-ahead by construction</h3><p>Bars are fed one at a time, so <code class="mono">ctx.hist()</code> can only return the past. Orders decided on bar i fill at bar i+1&#x27;s open. Same-bar close fills exist only as an explicit opt-in (<code class="mono">fill: &quot;close&quot;</code>), so you can measure the bias.</p></div><div class="card reveal"><div class="ic">₹</div><h3>Indian cost model</h3><p>NSE delivery and intraday schedules: brokerage (with a ₹20 cap for intraday), STT, exchange transaction charges, the SEBI fee, buy-side stamp duty, GST on fees and the DP charge on delivery sells. Flat-bps and zero-cost options are included too.</p></div><div class="card reveal"><div class="ic">√</div><h3>Market impact + capacity</h3><p>Half-spread plus k·σ·√(qty / volume) square-root impact, using each symbol&#x27;s own rolling volatility. Fills are capped at 10% of a bar&#x27;s volume, so you can watch a strategy stop working as the account grows.</p></div><div class="card reveal"><div class="ic">⛔</div><h3>Risk between strategy and market</h3><p>Position and gross exposure limits scale requests down, shorts can be disabled, and the engine can set fixed or trailing stops. Stops fill at the stop price, or at the open when price gaps through them. A drawdown kill switch liquidates and halts trading.</p></div><div class="card reveal"><div class="ic">∑</div><h3>Seven strategies</h3><p>SMA crossover, RSI mean reversion with a trend filter, Bollinger reversion, Donchian breakout with ATR risk sizing, cross-sectional momentum with an absolute filter, rolling-OLS pairs trading, and buy and hold. Custom strategies need only <code class="mono">onBar(ctx)</code>.</p></div><div class="card reveal"><div class="ic">σ</div><h3>Statistics that matter</h3><p>CAGR, volatility, Sharpe, Sortino, Calmar, maximum drawdown and its duration, historical VaR and CVaR, beta and alpha, win rate, profit factor, expectancy, MAE and MFE, exposure, turnover, costs and monthly returns.</p></div><div class="card reveal"><div class="ic">⚖</div><h3>Overfitting checks</h3><p>The probabilistic Sharpe ratio corrects for sample length, skew and fat tails. The deflated Sharpe ratio compares the best sweep result with what the luckiest of N random strategies would show. Walk-forward analysis reports in-sample against out-of-sample efficiency.</p></div><div class="card reveal"><div class="ic">⚡</div><h3>CLI + HTTP API</h3><p><code class="mono">demo</code>, <code class="mono">run</code>, <code class="mono">sweep</code> (with an ASCII heatmap), <code class="mono">walkforward</code>, <code class="mono">montecarlo</code>, <code class="mono">costs</code>, <code class="mono">strategies</code>, <code class="mono">data</code>, <code class="mono">bench</code> and <code class="mono">serve</code>. The API exposes <code class="mono">POST /v1/backtest</code>, <code class="mono">/v1/sweep</code>, <code class="mono">/v1/walkforward</code> and <code class="mono">/v1/montecarlo</code>, with synthetic or uploaded CSV data.</p></div></div>
+    </section>
+    <section class="section wrap" id="how">
+      <div class="sec-head reveal"><span class="kicker">How it works</span><h2>From request to result</h2></div>
+      <div class="steps"><div class="step reveal"><h3>Feed</h3><p>Each date&#x27;s bars are appended to per-symbol history. Rolling volatility is updated for the impact model, and symbols missing on a date carry their last close.</p></div><div class="step reveal"><h3>Fill</h3><p>Orders from yesterday&#x27;s decision fill at today&#x27;s open after slippage and the participation cap. Stops are then checked against today&#x27;s range and are gap-aware.</p></div><div class="step reveal"><h3>Mark</h3><p>Positions are marked at the close, short borrow and optional cash interest are charged, trailing stops ratchet, and each trade&#x27;s excursions are tracked.</p></div><div class="step reveal"><h3>Decide</h3><p>The strategy sees bars up to today and states target weights. The engine clamps them to the position and gross limits, rejects disallowed shorts, applies a rebalance band and queues the difference as orders.</p></div><div class="step reveal"><h3>Judge</h3><p>Equity, drawdown and trades become statistics. Sweeps, walk-forward runs and bootstraps then ask whether the result would survive outside this one sample.</p></div></div>
+    </section>
+    <section class="section wrap" id="arch">
+      <div class="sec-head reveal"><span class="kicker">Architecture</span><h2>System design</h2><p>Every box is a module in src/. Data flows left to right.</p></div>
+      <div class="card arch reveal"><svg viewBox="0 0 1160 230" role="img" aria-label="Architecture diagram"><path class="e" d="M272,73 C290,73 290,73 308,73"/><path class="f" d="M272,73 C290,73 290,73 308,73"/><path class="e" d="M272,153 C290,153 290,73 308,73"/><path class="f" d="M272,153 C290,153 290,73 308,73"/><path class="e" d="M548,102 C578,102 578,124 548,124"/><path class="f" d="M548,102 C578,102 578,124 548,124"/><path class="e" d="M562,153 C580,153 580,73 598,73"/><path class="f" d="M562,153 C580,153 580,73 598,73"/><path class="e" d="M838,102 C868,102 868,124 838,124"/><path class="f" d="M838,102 C868,102 868,124 838,124"/><path class="e" d="M852,153 C870,153 870,73 888,73"/><path class="f" d="M852,153 C870,153 870,73 888,73"/><path class="e" d="M1128,102 C1158,102 1158,124 1128,124"/><path class="f" d="M1128,102 C1158,102 1158,124 1128,124"/><path class="e" d="M888,153 C725,153 725,153 562,153"/><path class="f" d="M888,153 C725,153 725,153 562,153"/><text class="el" x="725" y="147" text-anchor="middle">re-run</text><text class="lane" x="145" y="24" text-anchor="middle">DATA</text><g class="node k0"><rect x="18" y="44" width="254" height="58" rx="12"/><text x="145" y="69" text-anchor="middle">Synthetic market</text><text class="s" x="145" y="83" text-anchor="middle">regimes · jumps · pair</text></g><g class="node k0"><rect x="18" y="124" width="254" height="58" rx="12"/><text x="145" y="149" text-anchor="middle">CSV loader</text><text class="s" x="145" y="163" text-anchor="middle">strict · adj close</text></g><text class="lane" x="435" y="24" text-anchor="middle">STRATEGY</text><g class="node kk2"><rect x="308" y="44" width="254" height="58" rx="12"/><text x="435" y="69" text-anchor="middle">Indicators</text><text class="s" x="435" y="83" text-anchor="middle">streaming O(1)</text></g><g class="node kk2"><rect x="308" y="124" width="254" height="58" rx="12"/><text x="435" y="149" text-anchor="middle">Strategy</text><text class="s" x="435" y="163" text-anchor="middle">target weights</text></g><text class="lane" x="725" y="24" text-anchor="middle">ENGINE</text><g class="node kk3"><rect x="598" y="44" width="254" height="58" rx="12"/><text x="725" y="69" text-anchor="middle">Risk gate</text><text class="s" x="725" y="83" text-anchor="middle">limits · stops · kill switch</text></g><g class="node kk3"><rect x="598" y="124" width="254" height="58" rx="12"/><text x="725" y="149" text-anchor="middle">Execution</text><text class="s" x="725" y="163" text-anchor="middle">next open · costs · impact</text></g><text class="lane" x="1015" y="24" text-anchor="middle">ANALYSIS</text><g class="node k0"><rect x="888" y="44" width="254" height="58" rx="12"/><text x="1015" y="69" text-anchor="middle">Statistics</text><text class="s" x="1015" y="83" text-anchor="middle">Sharpe · DD · PSR</text></g><g class="node k0"><rect x="888" y="124" width="254" height="58" rx="12"/><text x="1015" y="149" text-anchor="middle">Robustness</text><text class="s" x="1015" y="163" text-anchor="middle">sweep · WFA · bootstrap</text></g></svg></div>
+    </section>
+    <section class="section wrap" id="use">
+      <div class="sec-head reveal"><span class="kicker">Use it</span><h2>Ship it in your own stack</h2><p>Zero dependencies. Works in Node.js 18+ and modern browsers.</p></div>
+      <div class="tabs" data-tabs="use"><button class="on">JavaScript API</button><button>CLI</button><button>Install</button></div>
+      <div class="tabp on" data-tabp="use"><div class="codebox"><div class="bar2"><i></i><i></i><i></i><span>example.js</span><button class="btn sm ghost copy" data-copy>Copy</button></div><pre><code><span class="tk-k">import</span> { backtest, sweep, walkForward, monteCarlo, generate, parseCSV, GRIDS } <span class="tk-k">from</span> <span class="tk-s">&quot;prism-backtest&quot;</span>;
+
+<span class="tk-k">const</span> data = { BANKX: <span class="tk-f">generate</span>({ seed: <span class="tk-n">6</span>, years: <span class="tk-n">6</span> }).BANKX };        <span class="tk-c">// or { RELIANCE: parseCSV(fs.readFileSync(&quot;RELIANCE.csv&quot;, &quot;utf8&quot;)) }</span>
+
+<span class="tk-k">const</span> r = <span class="tk-f">backtest</span>(data, {
+  strategy: <span class="tk-s">&quot;sma-cross&quot;</span>, params: { fast: <span class="tk-n">20</span>, slow: <span class="tk-n">50</span> },
+  cash: <span class="tk-n">10_00_000</span>, costs: <span class="tk-s">&quot;india-delivery&quot;</span>,                          <span class="tk-c">// STT, stamp duty, exchange + SEBI fees, GST, DP charge</span>
+  slippage: { model: <span class="tk-s">&quot;sqrt&quot;</span>, k: <span class="tk-n">0.6</span>, spreadBps: <span class="tk-n">2</span> },                 <span class="tk-c">// half spread + square-root impact</span>
+  risk: { stopLoss: <span class="tk-n">0.08</span>, maxPos: <span class="tk-n">1</span>, ddHalt: <span class="tk-n">0.25</span> },                 <span class="tk-c">// gap-aware stop, kill switch at -25%</span>
+});
+r.metrics;   <span class="tk-c">// { cagr, sharpe, sortino, maxDD, calmar, var95, winRate, profitFactor, psr, fees, slippage, ... }</span>
+r.trades;    <span class="tk-c">// [{ sym, side, entryD, exitD, entry, exit, pnl, ret, mae, mfe, exitTag }]</span>
+
+<span class="tk-k">const</span> s = <span class="tk-f">sweep</span>(data, { strategy: <span class="tk-s">&quot;sma-cross&quot;</span>, grid: GRIDS[<span class="tk-s">&quot;sma-cross&quot;</span>] });
+s.best; s.dsr;                                                       <span class="tk-c">// deflated Sharpe after s.trials combinations</span>
+
+<span class="tk-k">const</span> wf = <span class="tk-f">walkForward</span>(data, { strategy: <span class="tk-s">&quot;sma-cross&quot;</span>, grid: GRIDS[<span class="tk-s">&quot;sma-cross&quot;</span>], train: <span class="tk-n">504</span>, test: <span class="tk-n">126</span> });
+wf.isSharpe; wf.oos.sharpe; wf.efficiency;                           <span class="tk-c">// in-sample vs out-of-sample</span>
+
+<span class="tk-k">const</span> mc = <span class="tk-f">monteCarlo</span>(r, { runs: <span class="tk-n">1000</span>, block: <span class="tk-n">10</span> });
+mc.final[<span class="tk-n">0.05</span>]; mc.maxDD[<span class="tk-n">0.95</span>]; mc.pLoss;
+
+<span class="tk-c">// your own strategy: state target weights, the engine does the rest</span>
+<span class="tk-k">const</span> myStrategy = { <span class="tk-f">onBar</span>(ctx) { <span class="tk-k">const</span> c = ctx.<span class="tk-f">close</span>(<span class="tk-s">&quot;BANKX&quot;</span>), c20 = ctx.<span class="tk-f">close</span>(<span class="tk-s">&quot;BANKX&quot;</span>, <span class="tk-n">20</span>); <span class="tk-k">if</span> (c20) ctx.<span class="tk-f">target</span>(<span class="tk-s">&quot;BANKX&quot;</span>, c &gt; c20 ? <span class="tk-n">1</span> : <span class="tk-n">0</span>); } };
+<span class="tk-f">backtest</span>(data, { strategy: myStrategy });</code></pre></div></div>
+      <div class="tabp" data-tabp="use"><div class="codebox"><div class="bar2"><i></i><i></i><i></i><span>terminal</span><button class="btn sm ghost copy" data-copy>Copy</button></div><pre><code><span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest demo
+<span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest run <span class="tk-p">--strategy</span> donchian <span class="tk-p">--symbols</span> BANKX <span class="tk-p">--trades</span>
+<span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest run <span class="tk-p">--strategy</span> rsi-revert <span class="tk-p">--csv</span> RELIANCE.csv <span class="tk-p">--costs</span> india-delivery
+<span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest sweep <span class="tk-p">--strategy</span> sma-cross
+<span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest walkforward <span class="tk-p">--strategy</span> sma-cross <span class="tk-p">--train</span> 504 <span class="tk-p">--test</span> 126
+<span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest montecarlo <span class="tk-p">--runs</span> 2000
+<span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest costs <span class="tk-p">--value</span> 100000
+<span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest serve <span class="tk-p">--port</span> 8789</code></pre></div></div>
+      <div class="tabp" data-tabp="use"><div class="codebox"><div class="bar2"><i></i><i></i><i></i><span>terminal</span><button class="btn sm ghost copy" data-copy>Copy</button></div><pre><code><span class="tk-c"># use the CLI without installing</span>
+<span class="tk-pr">$ </span>npx github:krishyaa06/prism-backtest <span class="tk-p">--help</span>
+
+<span class="tk-c"># or add the engine to your project</span>
+<span class="tk-pr">$ </span>npm install github:krishyaa06/prism-backtest
+
+<span class="tk-c"># run the simulator locally</span>
+<span class="tk-pr">$ </span>git clone https://github.com/krishyaa06/prism-backtest.git &amp;&amp; cd prism-backtest
+<span class="tk-pr">$ </span>npx serve .   # then open http://localhost:3000</code></pre></div></div>
+    </section>
+  </main>
+  <footer class="foot"><div class="wrap">
+    <span>◆ Prism Backtest · Prism Systems 11/49 · Built by <a href="https://github.com/krishyaa06">Soumya Bhandare</a> &amp; <a href="https://dc.gg/prismprotocol" target="_blank" rel="noreferrer">Prism Protocol</a></span>
+    <span><a href="https://github.com/krishyaa06/prism-backtest" target="_blank" rel="noreferrer">Source</a> · <a href="https://github.com/krishyaa06/prism-backtest/blob/main/docs/ARCHITECTURE.md">Architecture</a> · <a href="https://github.com/krishyaa06/prism-backtest/blob/main/docs/USAGE.md">Docs</a> · MIT License</span>
+  </div></footer>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
